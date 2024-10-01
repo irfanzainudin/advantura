@@ -24,22 +24,5 @@ public class App {
         window.setVisible(true);
 
         gp.startGameThread();
-
-        // KeyHandler kh = new KeyHandler();
-        // if (kh.upPressed == true) {
-        //     System.out.println("UP");
-        // }
-        
-        // if (kh.downPressed == true) {
-        //     System.out.println("DOWN");
-        // }
-        
-        // if (kh.rightPressed == true) {
-        //     System.out.println("RIGHT");
-        // }
-
-        // if (kh.leftPressed == true) {
-        //     System.out.println("LEFT");
-        // }
     }
 }

@@ -7,12 +7,14 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
+import entity.Player;
+
 public class GamePanel extends JPanel implements Runnable {
     // SCREEN SETTINGS
     final int originalTileSize = 16; // 16x16 tile
     final int scale = 3;
 
-    final int tileSize = originalTileSize * scale; // 48x48 tile
+    public final int tileSize = originalTileSize * scale; // 48x48 tile
     final int maxScreenCol = 16;
     final int maxScreenRow = 12;
     final int screenWidth = tileSize * maxScreenCol; // 768 pixels
@@ -23,6 +25,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     Thread gameThread;
     KeyHandler keyHandler = new KeyHandler();
+    Player player = new Player(this, keyHandler);
 
     // Set player's default position
     int playerX = 100;
@@ -59,47 +62,54 @@ public class GamePanel extends JPanel implements Runnable {
         //      |_______>____|
         //
         double drawInterval = 1000000000 / fps;
-        double nextDrawTime = System.nanoTime() + drawInterval;
+        double delta = 0;
+        double lastTime = System.nanoTime();
+        double currentTime;
+        long timer = 0;
+        int drawCount = 0;
+        // double nextDrawTime = System.nanoTime() + drawInterval;
         while (gameThread != null) {
             // System.out.println("Game is running...");
-            // UPDATE: update information (ie. player positions)
-            update();
-            // DRAW: draw the screen with the updated info
-            repaint();
+            
+            // APPROACH 1
+            // Update information (ie. player positions)
+            // update();
+            // Draw the screen with the updated info
+            // repaint();
 
-            try {
-                double remainingTime  = nextDrawTime - System.nanoTime();
-                remainingTime = remainingTime / 1000000;
+            // try {
+            //     double remainingTime  = nextDrawTime - System.nanoTime();
+            //     remainingTime = remainingTime / 1000000;
 
-                if (remainingTime < 0) {
-                    remainingTime = 0;
-                }
+            //     if (remainingTime < 0) {
+            //         remainingTime = 0;
+            //     }
 
-                Thread.sleep((long) remainingTime);
+            //     Thread.sleep((long) remainingTime);
 
-                nextDrawTime += drawInterval;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            //     nextDrawTime += drawInterval;
+            // } catch (InterruptedException e) {
+            //     e.printStackTrace();
+            // }
+
+            // APPROACH 2
+            currentTime = System.nanoTime();
+            delta += (currentTime - lastTime) / drawInterval;
+            timer += (currentTime - lastTime);
+            lastTime = currentTime;
+
+            if (delta >= 1) {
+                player.update();
+                repaint();
+                delta--;
+                drawCount++;
             }
-        }
-    }
 
-    public void update()
-    {
-        if (keyHandler.upPressed == true) {
-            playerY -= playerSpeed;
-        }
-        
-        if (keyHandler.downPressed == true) {
-            playerY += playerSpeed;
-        }
-        
-        if (keyHandler.rightPressed == true) {
-            playerX += playerSpeed;
-        }
-
-        if (keyHandler.leftPressed == true) {
-            playerX -= playerSpeed;
+            if (timer >= 1000000000) {
+                System.out.println("FPS: " + drawCount);
+                drawCount = 0;
+                timer = 0;
+            }
         }
     }
 
@@ -109,9 +119,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         Graphics2D g2 = (Graphics2D) g; // cast g to Graphics2d which has more functions
 
-        g2.setColor(Color.WHITE);
-
-        g2.fillRect(playerX, playerY, tileSize, tileSize);
+        player.draw(g2);
 
         g2.dispose();
     }
