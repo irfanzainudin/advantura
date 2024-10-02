@@ -16,6 +16,9 @@ public class Player extends Entity {
     GamePanel gp;
     KeyHandler keyHandler;
     
+    public int screenX;
+    public int screenY;
+    
     // TODO: change this to 30 if you want "relaxed" mode
     static final int SPRITE_REFRESH_RATE = 15;
     
@@ -23,13 +26,16 @@ public class Player extends Entity {
         this.gp = gp;
         this.keyHandler = kh;
 
+        screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
+        screenY = gp.screenHeight / 2  - (gp.tileSize / 2);
+
         setDefaultValues();
         getPlayerImages();
     }
 
     public void setDefaultValues() {
-        x = 100;
-        y = 100;
+        worldX = gp.tileSize * 23;
+        worldY = gp.tileSize * 21;
         speed = 4;
         // idle = true;
         direction = "idle_down";
@@ -69,22 +75,22 @@ public class Player extends Entity {
             keyHandler.leftPressed == true)
         {
             if (keyHandler.upPressed == true) {
-                y -= speed;
+                worldY -= speed;
                 direction = "move_up";
             }
             
             if (keyHandler.downPressed == true) {
-                y += speed;
+                worldY += speed;
                 direction = "move_down";
             }
             
             if (keyHandler.rightPressed == true) {
-                x += speed;
+                worldX += speed;
                 direction = "move_right";
             }
     
             if (keyHandler.leftPressed == true) {
-                x -= speed;
+                worldX -= speed;
                 direction = "move_left";
             }
         }
@@ -186,6 +192,6 @@ public class Player extends Entity {
             default:
                 break;
         }
-        g2.drawImage(image, x, y, gp.tileSize, gp.tileSize, null);
+        g2.drawImage(image, screenX, screenY, gp.tileSize, gp.tileSize, null);
     }
 }
