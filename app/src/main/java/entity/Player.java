@@ -3,6 +3,7 @@ package entity;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 
 // import java.awt.Color;
@@ -28,6 +29,12 @@ public class Player extends Entity {
 
         screenX = gp.screenWidth / 2 - (gp.tileSize / 2);
         screenY = gp.screenHeight / 2  - (gp.tileSize / 2);
+
+        solidArea = new Rectangle();
+        solidArea.x = 8;
+        solidArea.y = 16;
+        solidArea.width = 32;
+        solidArea.height = 32;
 
         setDefaultValues();
         getPlayerImages();
@@ -75,22 +82,18 @@ public class Player extends Entity {
             keyHandler.leftPressed == true)
         {
             if (keyHandler.upPressed == true) {
-                worldY -= speed;
                 direction = "move_up";
             }
             
             if (keyHandler.downPressed == true) {
-                worldY += speed;
                 direction = "move_down";
             }
             
             if (keyHandler.rightPressed == true) {
-                worldX += speed;
                 direction = "move_right";
             }
     
             if (keyHandler.leftPressed == true) {
-                worldX -= speed;
                 direction = "move_left";
             }
         }
@@ -100,6 +103,44 @@ public class Player extends Entity {
         else
         {
             direction = "idle_" + direction.split("_")[1];
+        }
+
+        // CHECK TILE COLLISION
+        collisionOn = false;
+        gp.collisionChecker.checkTile(this);
+
+        // IF COLLISION IS FALSE, PLAYER CAN MOVE
+        if (collisionOn == false)
+        {
+            switch (direction) {
+                case "move_up":
+                    worldY -= speed;
+                    break;
+                case "move_down":
+                    worldY += speed;
+                    break;
+                case "move_right":
+                    worldX += speed;
+                    break;
+                case "move_left":
+                    worldX -= speed;
+                    break;
+                case "idle_up":
+                    // worldY -= speed;
+                    break;
+                case "idle_down":
+                    // worldY += speed;
+                    break;
+                case "idle_right":
+                    // worldX += speed;
+                    break;
+                case "idle_left":
+                    // worldX -= speed;
+                    break;
+            
+                default:
+                    break;
+            }
         }
     
         spriteCounter++;
