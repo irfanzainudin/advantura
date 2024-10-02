@@ -6,3 +6,6 @@ build
 
 # MacOS stuff
 .DS_Store
+
+# My own sprites
+sprites/
